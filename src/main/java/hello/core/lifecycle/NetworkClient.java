@@ -1,5 +1,7 @@
 package hello.core.lifecycle;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.Setter;
 
 @Setter
@@ -23,12 +25,14 @@ public class NetworkClient {
         System.out.println("close: " + url);
     }
 
-    public void init() throws Exception {
+    @PostConstruct
+    public void init() {
         connect();
         call("초기화 연결 메시지");
     }
 
-    public void close() throws Exception {
+    @PreDestroy
+    public void close() {
         disconnect();
     }
 }

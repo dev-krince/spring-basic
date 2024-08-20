@@ -14,14 +14,14 @@ class BeanLifeCycleTest {
     @DisplayName("빈 생명주기 테스트")
     public void lifeCycleTest() {
         ConfigurableApplicationContext applicationContext = new AnnotationConfigApplicationContext(LifeCycleConfig.class);
-        NetworkClient client = applicationContext.getBean(NetworkClient.class);
+//        NetworkClient client = applicationContext.getBean(NetworkClient.class);
         applicationContext.close();
     }
 
     @Configuration
     static class LifeCycleConfig {
 
-        @Bean(initMethod = "init", destroyMethod = "close")
+        @Bean//(initMethod = "init", destroyMethod = "close")
         public NetworkClient networkClient() {
             NetworkClient networkClient = new NetworkClient();
             networkClient.setUrl("http://hello-spring.dev");
