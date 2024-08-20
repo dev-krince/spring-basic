@@ -7,9 +7,14 @@ import org.springframework.stereotype.Component;
 public class FieldInjectionService {
 
     @Autowired
-    FieldInjectionRepository fieldInjectionRepository;
+    private FieldInjectionRepository fieldInjectionRepository;
 
     public void fieldInjectionCall() {
         fieldInjectionRepository.fieldInjectionCall();
+    }
+
+    @Autowired
+    public void setFieldInjectionRepository(FieldInjectionRepository fieldInjectionRepository) {
+        this.fieldInjectionRepository = fieldInjectionRepository;
     }
 }
