@@ -5,13 +5,16 @@ import hello.core.domain.member.repository.MemberRepository;
 import hello.core.domain.member.service.MemberService;
 import hello.core.domain.member.service.MemberServiceImpl;
 import hello.core.domain.order.service.OrderServiceImpl;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("싱글톤 테스트")
 public class singletonTest {
@@ -117,5 +120,35 @@ public class singletonTest {
 
         //then
         assertThat(memberRepository1).isSameAs(memberRepository2);
+    }
+
+    @Test
+    @DisplayName("싱글톤 스코프 빈 테스트")
+    void singletonBeanFind() {
+
+        //given
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(SingletonBean.class);
+
+        //when
+        SingletonBean singletonBean1 = applicationContext.getBean(SingletonBean.class);
+        SingletonBean singletonBean2 = applicationContext.getBean(SingletonBean.class);
+        applicationContext.close();
+
+        //then
+        assertThat(singletonBean1).isSameAs(singletonBean2);
+    }
+
+    @Scope("singleton")
+    static class SingletonBean {
+
+        @PostConstruct
+        public void init() {
+            System.out.println("SingletonBean.init");
+        }
+
+        @PreDestroy
+        public void destroy() {
+            System.out.println("SingletonBean.destroy");
+        }
     }
 }
