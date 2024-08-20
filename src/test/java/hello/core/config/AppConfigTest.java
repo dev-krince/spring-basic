@@ -242,4 +242,13 @@ class AppConfigTest {
         assertThat(memberService).isInstanceOf(MemberService.class);
         assertThat(orderService).isInstanceOf(OrderService.class);
     }
+
+    @Test
+    @DisplayName("싱글톤으로 관리되는 이유(AppConfig를 등록하는게 아니라 CGLIB라는 바이트코드 조작 라이브러리를 사용해서 AppConfig를 상속 받은 다른 클래스를 등록하는 것)")
+    void configurationDeep() {
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+        AppConfig bean = applicationContext.getBean(AppConfig.class);
+
+        System.out.println("bean = " + bean.getClass());
+    }
 }
