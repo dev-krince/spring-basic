@@ -1,7 +1,10 @@
 package hello.core;
 
 import hello.core.config.AppConfig;
+import hello.core.domain.member.repository.MemberRepository;
 import hello.core.domain.member.service.MemberService;
+import hello.core.domain.member.service.MemberServiceImpl;
+import hello.core.domain.order.service.OrderServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
@@ -66,7 +69,7 @@ public class singletonTest {
 
         //when
         statefulService1.order("userA", 10000);
-        statefulService1.order("userB", 20000);
+        statefulService2.order("userB", 20000);
         int price = statefulService1.getPrice();
 
         //then
@@ -84,7 +87,7 @@ public class singletonTest {
 
         //when
         int userAPrice = statefulService1.statelessOrder("userA", 10000);
-        int userBPrice = statefulService1.statelessOrder("userB", 20000);
+        int userBPrice = statefulService2.statelessOrder("userB", 20000);
 
         //then
         assertThat(userAPrice).isEqualTo(10000);
@@ -97,5 +100,22 @@ public class singletonTest {
         public StatefulService StatefulService() {
             return new StatefulService();
         }
+    }
+
+    @Test
+    @DisplayName("빈으로 관리되는 객체는 싱글톤이 보장된다(같은 메모리 주소를 참조한다)")
+    void configurationTest() {
+
+        //given
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+        MemberServiceImpl memberService = applicationContext.getBean("memberService", MemberServiceImpl.class);
+        OrderServiceImpl orderService = applicationContext.getBean("orderService", OrderServiceImpl.class);
+
+        //when
+        MemberRepository memberRepository1 = memberService.getMemberRepository();
+        MemberRepository memberRepository2 = orderService.getMemberRepository();
+
+        //then
+        assertThat(memberRepository1).isSameAs(memberRepository2);
     }
 }
