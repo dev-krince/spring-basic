@@ -5,6 +5,7 @@ import jakarta.annotation.PreDestroy;
 import lombok.Getter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -13,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("싱글톤과 프로토타입 스코프 함께 사용 테스트1")
 public class SingletonWithPrototypeTest1 {
-
 
     @Test
     @DisplayName("프로토타입 빈 카운트 테스트")
@@ -69,6 +69,24 @@ public class SingletonWithPrototypeTest1 {
         assertThat(count2).isEqualTo(1);
     }
 
+    @Test
+    @DisplayName("ObjectProvider 를 사용하면 프로토타입 빈을 매번 새롭게 만들어서 반환해준다.")
+    void singletonClientUseObjectProviderPrototypeBean() {
+
+        //given
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(ClientBean.class, PrototypeBean.class);
+        ClientBean clientBean1 = applicationContext.getBean(ClientBean.class);
+        ClientBean clientBean2 = applicationContext.getBean(ClientBean.class);
+
+        //when
+        int count1 = clientBean1.objectProviderLogic();
+        int count2 = clientBean2.objectProviderLogic();
+
+        //then
+        assertThat(count1).isEqualTo(1);
+        assertThat(count2).isEqualTo(1);
+    }
+
     @Getter
     @Scope("prototype")
     static class PrototypeBean {
@@ -93,9 +111,11 @@ public class SingletonWithPrototypeTest1 {
     @Scope("singleton")
     static class ClientBean {
 
+        private final ObjectProvider<PrototypeBean> prototypeBeanProvider;
         private PrototypeBean prototypeBean;
 
-        public ClientBean(PrototypeBean prototypeBean) {
+        public ClientBean(ObjectProvider<PrototypeBean> prototypeBeanProvider, PrototypeBean prototypeBean) {
+            this.prototypeBeanProvider = prototypeBeanProvider;
             this.prototypeBean = prototypeBean;
         }
 
@@ -109,6 +129,13 @@ public class SingletonWithPrototypeTest1 {
 
             ApplicationContext applicationContext = new AnnotationConfigApplicationContext(PrototypeBean.class);
             this.prototypeBean = applicationContext.getBean(PrototypeBean.class);
+            prototypeBean.addCount();
+
+            return prototypeBean.getCount();
+        }
+
+        public int objectProviderLogic() {
+            PrototypeBean prototypeBean = prototypeBeanProvider.getObject();
             prototypeBean.addCount();
 
             return prototypeBean.getCount();
