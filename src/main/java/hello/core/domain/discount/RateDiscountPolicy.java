@@ -2,8 +2,10 @@ package hello.core.domain.discount;
 
 import hello.core.domain.member.entity.Grade;
 import hello.core.domain.member.entity.Member;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+@Primary
 @Component
 public class RateDiscountPolicy implements DiscountPolicy {
 

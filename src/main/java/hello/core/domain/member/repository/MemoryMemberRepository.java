@@ -1,11 +1,13 @@
 package hello.core.domain.member.repository;
 
 import hello.core.domain.member.entity.Member;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Primary
 @Component
 public class MemoryMemberRepository implements MemberRepository {
 
